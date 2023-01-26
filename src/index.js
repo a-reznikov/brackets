@@ -6,23 +6,51 @@ module.exports = function check(str, bracketsConfig) {
       arrayFromConfig.push(item);
     });
   }
-  // console.log(arrayFromString);
-  // console.log(arrayFromConfig);
   let compare = [];
   packagine(arrayFromString);
   packagine(arrayFromConfig);
 
   function packagine (bracketsArray) {
     let noDouble = '';
-
-    for (let brackets = 0; brackets < bracketsArray.length;) {
-      //console.log('bracketsArray on enter', bracketsArray);
-      brackets += 1;
-      //console.log('brackets number', brackets);
-      if (bracketsArray[brackets] === ')' || bracketsArray[brackets] === ']'|| bracketsArray[brackets] === '}'|| bracketsArray[brackets] === '|') {
+    let bracketNumber = 0;
+    let count = 0;
+    for (let brackets = 0; brackets < bracketsArray.length - 1;) {
+      brackets ++;
+      //console.log('_____________________________________');
+      //console.log('bracketsArray in Enter', bracketsArray);
+      //console.log('number', brackets);
+      if (bracketsArray[brackets] === ')' || bracketsArray[brackets] === ']'|| bracketsArray[brackets] === '}') {
+        //console.log('brackets',bracketsArray[brackets], 'find on number', brackets);
+        bracketNumber = brackets;
         bracketDelete (bracketsArray[brackets]);
         brackets = 0;
-      } 
+        count = 0;
+      } else if (brackets === bracketsArray.length - 1) {
+        //console.log(brackets, '===' , bracketsArray.length - 1);
+        bracketNumber = brackets;
+        bracketDelete (bracketsArray[brackets]);
+        brackets = 0;
+        count = 0;
+      } else if (bracketsArray[brackets] === '|') {
+        //console.log('First brackets', bracketsArray[brackets], 'find', brackets);
+        count++;
+        //console.log(count);
+          if (count === 2) {
+            //console.log('Second brackets', bracketsArray[brackets], 'find', brackets);
+            bracketNumber = brackets;
+            bracketDelete (bracketsArray[brackets]);
+            brackets = 0;
+            count = 0;
+          } else if (bracketsArray[0] === '|' && bracketsArray[1] === '|') {
+            //console.log('Towords first and second brackets', bracketsArray[brackets], 'find', brackets);
+            bracketNumber = brackets;
+            bracketDelete (bracketsArray[brackets]);
+            brackets = 0;
+            count = 0;
+          }
+      }
+
+      
     }
     function  bracketDelete (bracket) {
       let oposition = '';
@@ -35,21 +63,42 @@ module.exports = function check(str, bracketsConfig) {
       } else if (bracket === '|') {
         oposition = '|';
       }
-      let sliceArray = bracketsArray.slice(0, bracketsArray.indexOf(bracket));
-      if (sliceArray.indexOf(oposition, -(sliceArray.length - 1)) !== -1) {
-        //console.log('delete slice', bracketsArray.splice(sliceArray.indexOf(oposition, -(sliceArray.length - 1)), (bracketsArray.indexOf(bracket) + 1)));
-        bracketsArray.splice(sliceArray.indexOf(oposition, -(sliceArray.length - 1)), (bracketsArray.indexOf(bracket) + 1));
+      let sliceArray = bracketsArray.slice(0, bracketNumber + 1);
+      let endSlice = bracketNumber;
+      //console.log('sliceArray', sliceArray);
+      if (sliceArray.length === 2) {
+        if (sliceArray[0] === oposition) {
+          bracketsArray.splice(0, 2);
+          //console.log("Length 2: after bracketsArray", bracketsArray);
+        } else {
+          //console.log("noDouble, delete One ", bracketsArray[endSlice]);
+          noDouble += bracketsArray[endSlice];
+          bracketsArray.splice(endSlice, 1);
+        }
       } else {
-        noDouble += bracket;
-        //console.log('Dont find oposition for, delete', bracket);
-        bracketsArray.splice(bracketsArray.indexOf(bracket), 1);
-      }
+        if (sliceArray.indexOf(oposition !== -1)) {
+          for (let i = sliceArray.length - 2; i >= 0;) {
+            if (sliceArray[i] === oposition) {
+              bracketsArray.splice(i, sliceArray.length - i);
+              //console.log("after bracketsArray", bracketsArray);
+              break;
+            }
+            i--;
+          }
+        } else {
+          //console.log("noDouble, delete One ", bracketsArray[endSlice]);
+          noDouble += bracketsArray[endSlice];
+          bracketsArray.splice(endSlice, 1);
+        }
+      } 
     }
-    // console.log(noDouble);
-    console.log('bracketsArray on exit', bracketsArray);
+    let residueBracketsArray = bracketsArray.join('');
+    if (bracketsArray.length > 0) {
+      noDouble += residueBracketsArray;
+    }
+    //console.log('noDouble', noDouble);
     compare.push(noDouble);
+    console.log('compare', compare);
   }
-  console.log('compare', compare);
-  // compare[0] == compare[1] ? console.log(true) : console.log(false);
   return compare[0] == compare[1] ? true : false;
 }
