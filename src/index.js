@@ -15,13 +15,14 @@ module.exports = function check(str, bracketsConfig) {
   function packagine (bracketsArray) {
     let noDouble = '';
 
-    for (let brackets = -1; brackets < bracketsArray.length;) {
+    for (let brackets = 0; brackets < bracketsArray.length;) {
+      //console.log('bracketsArray on enter', bracketsArray);
       brackets += 1;
+      //console.log('brackets number', brackets);
       if (bracketsArray[brackets] === ')' || bracketsArray[brackets] === ']'|| bracketsArray[brackets] === '}'|| bracketsArray[brackets] === '|') {
-        // console.log('Find brackets', bracketsArray[brackets], "its number = ", brackets);
         bracketDelete (bracketsArray[brackets]);
-        brackets = -1;
-      }
+        brackets = 0;
+      } 
     }
     function  bracketDelete (bracket) {
       let oposition = '';
@@ -35,22 +36,20 @@ module.exports = function check(str, bracketsConfig) {
         oposition = '|';
       }
       let sliceArray = bracketsArray.slice(0, bracketsArray.indexOf(bracket));
-      // console.log(bracketsArray);
-      // console.log(sliceArray, 'length = ', sliceArray.length);
       if (sliceArray.indexOf(oposition, -(sliceArray.length - 1)) !== -1) {
-        // bracketsArray.splice(bracketsArray.indexOf(bracket), 1);
+        //console.log('delete slice', bracketsArray.splice(sliceArray.indexOf(oposition, -(sliceArray.length - 1)), (bracketsArray.indexOf(bracket) + 1)));
         bracketsArray.splice(sliceArray.indexOf(oposition, -(sliceArray.length - 1)), (bracketsArray.indexOf(bracket) + 1));
-        // console.log('Deleted numbers', bracket, 'and', oposition, 'After deleted', bracketsArray);
       } else {
         noDouble += bracket;
+        //console.log('Dont find oposition for, delete', bracket);
         bracketsArray.splice(bracketsArray.indexOf(bracket), 1);
       }
     }
     // console.log(noDouble);
-    // console.log(bracketsArray);
+    console.log('bracketsArray on exit', bracketsArray);
     compare.push(noDouble);
   }
-  // console.log(compare);
+  console.log('compare', compare);
   // compare[0] == compare[1] ? console.log(true) : console.log(false);
   return compare[0] == compare[1] ? true : false;
 }
